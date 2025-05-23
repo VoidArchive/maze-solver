@@ -1,13 +1,18 @@
-from tkinter import Tk, BOTH, Canvas
+from tkinter import Tk, BOTH, Canvas, Frame, Button
 
 
 class Window:
     def __init__(self, width, height):
         self.__root = Tk()
-        self.__root.title("My Tkinter Window")
+        self.__root.title("Maze Solver")
         self.__root.protocol("WM_DELETE_WINDOW", self.close)
+        
         self.__canvas = Canvas(self.__root, bg="white", width=width, height=height)
         self.__canvas.pack(fill=BOTH, expand=1)
+
+        self.__button_frame = Frame(self.__root)
+        self.__button_frame.pack(fill=Tk.X, side=Tk.BOTTOM)
+
         self.__running = False
 
     def redraw(self):
@@ -24,6 +29,13 @@ class Window:
 
     def close(self):
         self.__running = False
+
+    def add_button(self, text, command):
+        button = Button(self.__button_frame, text=text, command=command)
+        button.pack(side=Tk.LEFT, padx=5, pady=5)
+
+    def clear_canvas(self):
+        self.__canvas.delete("all")
 
 
 class Point:
