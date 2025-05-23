@@ -1,4 +1,10 @@
-from graphics import Line, Point, LIGHT_FOREGROUND, SOLVE_PATH_COLOR, UNDO_PATH_COLOR, DARK_BACKGROUND
+from graphics import (
+    Line,
+    Point,
+    SOLVE_PATH_COLOR,
+    UNDO_PATH_COLOR,
+    DARK_BACKGROUND,
+)
 
 
 class Cell:

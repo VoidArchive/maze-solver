@@ -4,11 +4,9 @@ This project is a Python application that generates random mazes and visualizes 
 
 ## Demo
 
-Check out a video demonstration of the application in action:
 
-[Watch Demo (algorithm.mkv)](./algorithm.mkv)
+![Watch Demo (algorithm.mkv)](output.gif)
 
-*(Note: If viewing on a platform like GitHub, you may need to download the .mkv file or the platform might provide an inline player.)*
 
 ## Features
 
@@ -33,7 +31,7 @@ Check out a video demonstration of the application in action:
     *   Python 3.x
     *   Tkinter (usually included with standard Python installations)
 
-2.  **Clone the repository (if applicable) or ensure all project files are in the same directory.**
+2.  **Clone the repository and ensure all project files are in the same directory.**
 
 3.  **Navigate to the project directory in your terminal.**
 
@@ -69,14 +67,3 @@ Check out a video demonstration of the application in action:
 *   **Depth-First Search (DFS):** An iterative implementation that explores one path as far as possible. If it hits a dead end or a visited cell, it backtracks and tries another path. The path found is not guaranteed to be the shortest.
 *   **Breadth-First Search (BFS):** Explores the maze layer by layer, guaranteeing that the first time it reaches the exit, it has found the shortest path in terms of the number of steps.
 *   **A\* Search (A-Star):** A more informed search algorithm. It uses a heuristic (Manhattan distance to the exit) in addition to the actual cost from the start to prioritize cells that are more likely to be on the shortest path. It also guarantees the shortest path.
-
-## Potential Future Enhancements
-
-*   More advanced solving algorithms (e.g., Bidirectional Search).
-*   Different maze generation algorithms (e.g., Prim's, Kruskal's).
-*   Algorithm selection via a dropdown menu instead of separate buttons.
-*   "Reset Solution" button to clear a path without regenerating the maze.
-*   Step-by-step visualization controls.
-*   User input for the maze generation seed.
-*   Dynamic window/canvas resizing based on maze parameters.
- 

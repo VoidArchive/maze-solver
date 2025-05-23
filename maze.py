@@ -1,8 +1,8 @@
 from cell import Cell
 import time
 import random
-from collections import deque # For BFS queue
-import heapq # For A* priority queue
+from collections import deque 
+import heapq 
 
 
 class Maze:
@@ -27,7 +27,7 @@ class Maze:
         self.__cells = []
         if seed:
             random.seed(seed)
-        else: # Ensure a seed is always used for reproducibility if none provided initially
+        else:
             random.seed(time.time())
 
         self.__create_cell()
@@ -75,49 +75,46 @@ class Maze:
         stack = [] 
         self.__cells[start_i][start_j].visited = True
         stack.append((start_i, start_j))
-        self.__animate() # Animate starting cell
+        self.__animate() 
 
         while stack:
-            curr_i, curr_j = stack[-1] # Peek at the top
+            curr_i, curr_j = stack[-1] 
 
             next_index_list = []
-            # Check neighbors (Left, Right, Up, Down)
-            if curr_i > 0 and not self.__cells[curr_i - 1][curr_j].visited: # Left
+            if curr_i > 0 and not self.__cells[curr_i - 1][curr_j].visited: 
                 next_index_list.append((curr_i - 1, curr_j))
-            if curr_i < self.__num_cols - 1 and not self.__cells[curr_i + 1][curr_j].visited: # Right
+            if curr_i < self.__num_cols - 1 and not self.__cells[curr_i + 1][curr_j].visited: 
                 next_index_list.append((curr_i + 1, curr_j))
-            if curr_j > 0 and not self.__cells[curr_i][curr_j - 1].visited: # Up
+            if curr_j > 0 and not self.__cells[curr_i][curr_j - 1].visited: 
                 next_index_list.append((curr_i, curr_j - 1))
-            if curr_j < self.__num_rows - 1 and not self.__cells[curr_i][curr_j + 1].visited: # Down
+            if curr_j < self.__num_rows - 1 and not self.__cells[curr_i][curr_j + 1].visited: 
                 next_index_list.append((curr_i, curr_j + 1))
 
-            if not next_index_list: # No unvisited neighbors
-                self.__draw_cell(curr_i, curr_j) # Ensure cell is drawn before popping
+            if not next_index_list: 
+                self.__draw_cell(curr_i, curr_j) 
                 stack.pop()
                 continue
 
-            # Choose a random unvisited neighbor
             next_i, next_j = random.choice(next_index_list)
 
-            # Knock down walls
-            if next_i == curr_i + 1: # Moving Right
+            if next_i == curr_i + 1: 
                 self.__cells[curr_i][curr_j].has_right_wall = False
                 self.__cells[next_i][curr_j].has_left_wall = False
-            elif next_i == curr_i - 1: # Moving Left
+            elif next_i == curr_i - 1: 
                 self.__cells[curr_i][curr_j].has_left_wall = False
                 self.__cells[next_i][curr_j].has_right_wall = False
-            elif next_j == curr_j + 1: # Moving Down
+            elif next_j == curr_j + 1: 
                 self.__cells[curr_i][curr_j].has_bottom_wall = False
-                self.__cells[next_i][curr_j + 1].has_top_wall = False # Corrected: next_i -> curr_i
-            elif next_j == curr_j - 1: # Moving Up
+                self.__cells[next_i][curr_j + 1].has_top_wall = False 
+            elif next_j == curr_j - 1: 
                 self.__cells[curr_i][curr_j].has_top_wall = False
-                self.__cells[next_i][curr_j - 1].has_bottom_wall = False # Corrected: next_i -> curr_i
+                self.__cells[next_i][curr_j - 1].has_bottom_wall = False 
 
-            self.__draw_cell(curr_i, curr_j) # Redraw current cell with new broken wall
+            self.__draw_cell(curr_i, curr_j) 
             self.__cells[next_i][next_j].visited = True
-            self.__draw_cell(next_i, next_j) # Draw the new cell entered
+            self.__draw_cell(next_i, next_j) 
             stack.append((next_i, next_j))
-            # self.__animate() # Animation is handled by __draw_cell if animate=True
+            self.__animate() 
 
     def __reset_cell_visited(self):
         for col in self.__cells:
@@ -128,7 +125,6 @@ class Maze:
         if self.__win is not None:
             self.__win.clear_canvas()
         
-        # Update dimensions if provided
         if num_rows is not None:
             self.__num_rows = num_rows
         if num_cols is not None:
@@ -172,7 +168,6 @@ class Maze:
                 self.__animate()
 
             if (curr_i, curr_j) == end_node:
-                # Solution Found! Now, clear and redraw only the solution path.
                 if self.__win is not None:
                     self.__win.clear_canvas()
                     for r_i in range(self.__num_cols):
@@ -180,7 +175,7 @@ class Maze:
                             self.__draw_cell(r_i,r_j, animate=False)
                     self.__win.redraw()
                 
-                # Draw final path segments from the `path` variable
+                
                 for path_segment in path:
                     (prev_i, prev_j), (next_i, next_j) = path_segment
                     self.__cells[prev_i][prev_j].draw_move(self.__cells[next_i][next_j])
@@ -198,11 +193,7 @@ class Maze:
                 potential_moves.append((curr_i, curr_j - 1))
             
             found_next_step = False
-            # Add neighbors in reverse order of desired exploration for stack (LIFO)
-            # If we want to try Up, Left, Down, Right (arbitrary order for example)
-            # we add them as Right, Down, Left, Up to the stack.
-            # The current `potential_moves` order and then iterating through it to push works fine.
-            for next_i, next_j in reversed(potential_moves): # Process in specific order for consistent DFS pathing if desired
+            for next_i, next_j in reversed(potential_moves): 
                 if (next_i, next_j) not in visited_dfs:
                     visited_dfs.add((next_i, next_j))
                     new_path_segment = ((curr_i, curr_j), (next_i, next_j))
@@ -218,10 +209,10 @@ class Maze:
 
     def _solve_bfs(self):
         q = deque()
-        q.append(((0,0), [])) # Each item is ((i,j), path_to_here)
+        q.append(((0,0), [])) 
         visited_bfs = set()
         visited_bfs.add((0,0))
-        parent_map = {} # To reconstruct path for drawing
+        parent_map = {} 
 
         start_node = (0,0)
         end_node = (self.__num_cols - 1, self.__num_rows - 1)
@@ -229,16 +220,13 @@ class Maze:
         while q:
             (curr_i, curr_j), path = q.popleft()
             
-            # Animate exploration step
-            # For BFS, we draw move from parent to current.
-            # The first node (start_node) has no parent to draw from in this loop.
             if (curr_i, curr_j) != start_node:
                 prev_i, prev_j = parent_map[(curr_i, curr_j)]
                 self.__cells[prev_i][prev_j].draw_move(self.__cells[curr_i][curr_j])
-                self.__animate() # Animate each step of exploration
+                self.__animate() 
 
             if (curr_i, curr_j) == end_node:
-                # Path found, now reconstruct and draw final path (without undos)
+                
                 solution_path = []
                 temp_i, temp_j = end_node
                 while (temp_i, temp_j) != start_node:
@@ -248,7 +236,7 @@ class Maze:
                 solution_path.append(start_node)
                 solution_path.reverse()
 
-                # Clear previous exploration paths before drawing final
+                
                 if self.__win is not None:
                     self.__win.clear_canvas()
                     for r_i in range(self.__num_cols):
@@ -256,7 +244,7 @@ class Maze:
                             self.__draw_cell(r_i,r_j, animate=False)
                     self.__win.redraw()
                 
-                # Draw final path
+                
                 for k in range(len(solution_path) - 1):
                     p1_i, p1_j = solution_path[k]
                     p2_i, p2_j = solution_path[k+1]
@@ -264,18 +252,18 @@ class Maze:
                     self.__animate()
                 return True
 
-            # Neighbors: Left, Right, Up, Down
+            
             possible_moves = []
-            # Left
+            
             if curr_i > 0 and not self.__cells[curr_i][curr_j].has_left_wall:
                 possible_moves.append((curr_i - 1, curr_j))
-            # Right
+            
             if curr_i < self.__num_cols - 1 and not self.__cells[curr_i][curr_j].has_right_wall:
                 possible_moves.append((curr_i + 1, curr_j))
-            # Up
+            
             if curr_j > 0 and not self.__cells[curr_i][curr_j].has_top_wall:
                 possible_moves.append((curr_i, curr_j - 1))
-            # Down
+            
             if curr_j < self.__num_rows - 1 and not self.__cells[curr_i][curr_j].has_bottom_wall:
                 possible_moves.append((curr_i, curr_j + 1))
 
@@ -286,22 +274,22 @@ class Maze:
                     new_path = list(path)
                     new_path.append((next_i, next_j))
                     q.append(((next_i, next_j), new_path))
-                    # No undo drawing needed for BFS exploration as we draw parent->current
+                    
         
-        return False # Target not reached
+        return False 
 
     def _heuristic(self, p1_coords, p2_coords):
-        # Manhattan distance
+        
         return abs(p1_coords[0] - p2_coords[0]) + abs(p1_coords[1] - p2_coords[1])
 
     def _solve_astar(self):
         start_node = (0, 0)
         end_node = (self.__num_cols - 1, self.__num_rows - 1)
 
-        open_set = []  # Priority queue (min-heap)
-        heapq.heappush(open_set, (0, start_node)) # (f_score, (i, j))
+        open_set = []  
+        heapq.heappush(open_set, (0, start_node)) 
         
-        came_from = {} # Parent map
+        came_from = {} 
 
         g_score = { (i,j): float('inf') for i in range(self.__num_cols) for j in range(self.__num_rows) }
         g_score[start_node] = 0
@@ -309,7 +297,7 @@ class Maze:
         f_score = { (i,j): float('inf') for i in range(self.__num_cols) for j in range(self.__num_rows) }
         f_score[start_node] = self._heuristic(start_node, end_node)
 
-        open_set_hash = {start_node} # To quickly check if a node is in open_set
+        open_set_hash = {start_node} 
 
         while open_set:
             _, current_coords = heapq.heappop(open_set)
@@ -317,14 +305,14 @@ class Maze:
 
             curr_i, curr_j = current_coords
 
-            # Animate exploration step (similar to BFS)
+            
             if current_coords != start_node:
                 prev_i, prev_j = came_from[current_coords]
                 self.__cells[prev_i][prev_j].draw_move(self.__cells[curr_i][curr_j])
                 self.__animate()
 
             if current_coords == end_node:
-                # Path found, reconstruct and draw final path
+                
                 solution_path = []
                 temp_coords = end_node
                 while temp_coords in came_from:
@@ -347,23 +335,23 @@ class Maze:
                     self.__animate()
                 return True
 
-            # Check neighbors
+            
             possible_next_nodes = []
-            # Left
+            
             if curr_i > 0 and not self.__cells[curr_i][curr_j].has_left_wall:
                 possible_next_nodes.append((curr_i - 1, curr_j))
-            # Right
+            
             if curr_i < self.__num_cols - 1 and not self.__cells[curr_i][curr_j].has_right_wall:
                 possible_next_nodes.append((curr_i + 1, curr_j))
-            # Up
+            
             if curr_j > 0 and not self.__cells[curr_i][curr_j].has_top_wall:
                 possible_next_nodes.append((curr_i, curr_j - 1))
-            # Down
+            
             if curr_j < self.__num_rows - 1 and not self.__cells[curr_i][curr_j].has_bottom_wall:
                 possible_next_nodes.append((curr_i, curr_j + 1))
 
             for neighbor_coords in possible_next_nodes:
-                tentative_g_score = g_score[current_coords] + 1 # Cost to move to neighbor is 1
+                tentative_g_score = g_score[current_coords] + 1 
 
                 if tentative_g_score < g_score[neighbor_coords]:
                     came_from[neighbor_coords] = current_coords
@@ -373,7 +361,7 @@ class Maze:
                         heapq.heappush(open_set, (f_score[neighbor_coords], neighbor_coords))
                         open_set_hash.add(neighbor_coords)
         
-        return False # Target not reached
+        return False 
 
     def solve(self, algorithm="dfs"):
         self.__reset_cell_visited()
